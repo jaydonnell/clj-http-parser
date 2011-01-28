@@ -55,22 +55,20 @@
            (.getElementsByName node tag true))
 
 (defn href-to-url [href url]
-  (do
-    (println url)
-    (try
-        (let [uri #^URI (.resolve (convert-url-to-uri url)
-                                  (preprocess-href href))]
-          (if (.getHost uri)
-            (canonicalize-url uri)
-            nil))
-        (catch java.lang.IllegalArgumentException e
-          (do
-            (log/info (str "Exception parsing uri " url))
-            nil))
-        (catch java.net.URISyntaxException e
-          (do
-            (log/info (str "Exception parsing uri " url))
-            nil)))))
+  (try
+    (let [uri #^URI (.resolve (convert-url-to-uri url)
+                              (preprocess-href href))]
+      (if (.getHost uri)
+        (canonicalize-url uri)
+        nil))
+    (catch java.lang.IllegalArgumentException e
+      (do
+        (log/info (str "Exception parsing uri " url))
+        nil))
+    (catch java.net.URISyntaxException e
+      (do
+        (log/info (str "Exception parsing uri " url))
+        nil))))
 
 (defn get-domain [s]
   (.getHost #^URL (as-url s)))
