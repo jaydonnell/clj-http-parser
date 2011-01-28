@@ -2,9 +2,11 @@
 
 An html parser for clojure
 
-## Installation
+We can be found on clojars at http://clojars.org/clj-html-parser
 
-FIXME: write
+## Installation with leiningen
+
+[clj-html-parser "0.1.0"]
 
 ## Usage
 
