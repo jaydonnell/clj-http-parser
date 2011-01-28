@@ -4,6 +4,7 @@
 
 (def cwd (System/getProperty "user.dir"))
 (def h (slurp (str cwd "/test-data/one-link.html")))
+(def hrefs-file (slurp (str cwd "/test-data/hrefs.html")))
 
 (deftest in-links-test
   (is (= '("http://yakkstr.com/users/ddonnell" "http://yakkstr.com/users/nmurray") (in-links (slurp (str cwd "/test-data/outlinks.html")) "http://yakkstr.com"))))
@@ -15,3 +16,7 @@
 (deftest href-to-url-test
   (is (= "http://yakkstr.com/users/ddonnell" (href-to-url "/users/ddonnell" "http://yakkstr.com")))
   (is (= "http://nmurray.com/something" (href-to-url "http://nmurray.com/something" "http://yakkstr.com"))))
+
+(deftest in-links-should-filter-mailto-test
+  (let [out (in-links hrefs-file "http://yakkstr.com")]
+    (is (= 2 (count out)))))

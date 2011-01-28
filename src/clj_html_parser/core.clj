@@ -82,14 +82,14 @@
 (def reject-regexp #".*\.(a|ai|aif|aifc|aiff|asc|avi|bcpio|bin|bmp|bz2|c|cdf|cgi|cgm|class|cpio|cpp?|cpt|csh|css|cxx|dcr|dif|dir|djv|djvu|dll|dmg|dms|doc|dtd|dv|dvi|dxr|eps|etx|exe|ez|gif|gram|grxml|gtar|h|hdf|hqx|ice|ico|ics|ief|ifb|iges|igs|iso|jar|jnlp|jp2|jpe|jpeg|jpg|js|kar|latex|lha|lzh|m3u|mac|man|mathml|me|mesh|mid|midi|mif|mov|movie|mp2|mp3|mp4|mpe|mpeg|mpg|mpga|ms|msh|mxu|nc|o|oda|ogg|pbm|pct|pdb|pdf|pgm|pgn|pic|pict|pl|png|pnm|pnt|pntg|ppm|ppt|ps|py|qt|qti|qtif|ra|ram|ras|rdf|rgb|rm|roff|rpm|rtf|rtx|s|sgm|sgml|sh|shar|silo|sit|skd|skm|skp|skt|smi|smil|snd|so|spl|src|srpm|sv4cpio|sv4crc|svg|swf|t|tar|tcl|tex|texi|texinfo|tgz|tif|tiff|tr|tsv|ustar|vcd|vrml|vxml|wav|wbmp|wbxml|wml|wmlc|wmls|wmlsc|wrl|xbm|xht|xhtml|xls|xml|xpm|xsl|xslt|xwd|xyz|z|zip|rss|atom|json)$")
 
 (defn in-links [html url]
-  (do
-    (let [links (->> (get-elements-by-name html "a")
-                     (remove (fn [e] (nil? (.getAttributeByName e "href"))))
-                     (map
-                      (fn [anchor] (href-to-url (.getAttributeByName anchor "href") url))))
-          
-          filtered  (for [anchor links 
-                          :when (not (re-matches reject-regexp anchor))] anchor)
-          i-links (filter #(in-link? % url) filtered)
-          ]
-        i-links)))
+  (let [links (->> (get-elements-by-name html "a")
+                   (remove (fn [e] (nil? (.getAttributeByName e "href"))))
+                   (map
+                    (fn [anchor] (href-to-url (.getAttributeByName anchor "href") url)))
+                   (remove nil?))
+        
+        filtered  (for [anchor links 
+                        :when (not (re-matches reject-regexp anchor))] anchor)
+        i-links (filter #(in-link? % url) filtered)
+        ]
+    i-links))
