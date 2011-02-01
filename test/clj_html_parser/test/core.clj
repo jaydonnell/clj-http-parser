@@ -20,3 +20,6 @@
 (deftest in-links-should-filter-mailto-test
   (let [out (in-links hrefs-file "http://yakkstr.com")]
     (is (= 2 (count out)))))
+
+(deftest strip-whitespace-from-hrefs
+  (is (= "http://yakkstr.com/users/ddonnell" (href-to-url "/users/ddonnell " "http://yakkstr.com"))))

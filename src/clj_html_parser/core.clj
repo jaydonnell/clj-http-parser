@@ -56,26 +56,32 @@
 
 (defn href-to-url [href url]
   (try
-    (let [uri #^URI (.resolve (convert-url-to-uri url)
+    (let [href (su/trim href)
+          uri #^URI (.resolve (convert-url-to-uri url)
                               (preprocess-href href))]
       (if (.getHost uri)
         (canonicalize-url uri)
         nil))
     (catch java.lang.IllegalArgumentException e
       (do
-        (log/info (str "Exception parsing uri " url))
+        (log/info (str "Exception parsing href: " href " for uri: " url))
         nil))
     (catch java.net.URISyntaxException e
       (do
-        (log/info (str "Exception parsing uri " url))
+        (log/info (str "Exception parsing href: " href " for uri: " url))
         nil))))
 
 (defn get-domain [s]
   (.getHost #^URL (as-url s)))
 
 (defn in-link? [link-url page-url]
-  (and (re-find #"^http" link-url)
-       (= (get-domain link-url) (get-domain page-url))))
+  (try
+    (and (re-find #"^http" link-url)
+         (= (get-domain link-url) (get-domain page-url)))
+    (catch java.net.MalformedURLException e
+      (do
+        (log/info (str "Exception parsing url: " link-url))
+        false))))
 
 (def reject-regexp #".*\.(a|ai|aif|aifc|aiff|asc|avi|bcpio|bin|bmp|bz2|c|cdf|cgi|cgm|class|cpio|cpp?|cpt|csh|css|cxx|dcr|dif|dir|djv|djvu|dll|dmg|dms|doc|dtd|dv|dvi|dxr|eps|etx|exe|ez|gif|gram|grxml|gtar|h|hdf|hqx|ice|ico|ics|ief|ifb|iges|igs|iso|jar|jnlp|jp2|jpe|jpeg|jpg|js|kar|latex|lha|lzh|m3u|mac|man|mathml|me|mesh|mid|midi|mif|mov|movie|mp2|mp3|mp4|mpe|mpeg|mpg|mpga|ms|msh|mxu|nc|o|oda|ogg|pbm|pct|pdb|pdf|pgm|pgn|pic|pict|pl|png|pnm|pnt|pntg|ppm|ppt|ps|py|qt|qti|qtif|ra|ram|ras|rdf|rgb|rm|roff|rpm|rtf|rtx|s|sgm|sgml|sh|shar|silo|sit|skd|skm|skp|skt|smi|smil|snd|so|spl|src|srpm|sv4cpio|sv4crc|svg|swf|t|tar|tcl|tex|texi|texinfo|tgz|tif|tiff|tr|tsv|ustar|vcd|vrml|vxml|wav|wbmp|wbxml|wml|wmlc|wmls|wmlsc|wrl|xbm|xht|xhtml|xls|xml|xpm|xsl|xslt|xwd|xyz|z|zip|rss|atom|json)$")
 
